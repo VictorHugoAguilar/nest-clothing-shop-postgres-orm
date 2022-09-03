@@ -22,13 +22,17 @@
   <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
   [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
-## Clone repository
+## 1. Clone repository
 
 ````
 git clone https://github.com/VictorHugoAguilar/nest-clothing-shop-postgres-orm.git
+
+yarn install
 ````
 
-## Start database with docker
+## 2. Clone env.template with name .env and add config
+
+## 3. Start database with docker
 
 ````
 docker-compose up -d
