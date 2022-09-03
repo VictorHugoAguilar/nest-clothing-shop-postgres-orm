@@ -1,4 +1,3 @@
-import { text } from 'stream/consumers';
 import { ProductImage } from './product-image.entity';
 import {
   BeforeInsert,
@@ -9,7 +8,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-@Entity()
+@Entity({ name: 'products' })
 export class Product {
   @PrimaryGeneratedColumn('uuid')
   id: string;

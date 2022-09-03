@@ -38,6 +38,13 @@ yarn install
 docker-compose up -d
 ````
 
+## 4. Fill Data for test
+
+`````
+METHOD GET TO URL : localhost:3000/api/seed
+`````
+
+
 ## License
 
 Nest is [MIT licensed](LICENSE).
