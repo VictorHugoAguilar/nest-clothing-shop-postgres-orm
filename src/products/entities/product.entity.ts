@@ -1,5 +1,11 @@
 import { text } from 'stream/consumers';
-import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  BeforeInsert,
+  BeforeUpdate,
+  Column,
+  Entity,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity()
 export class Product {
@@ -47,18 +53,27 @@ export class Product {
 
   @BeforeInsert()
   checkSlugInsert() {
-    if (!this.slug) {
-      this.slug = this.title
-        .toLocaleLowerCase()
-        .replaceAll(' ', '_')
-        .replaceAll("'", '_')
-        .replaceAll('`', '_');
-    } else {
-      this.slug = this.slug
-        .toLocaleLowerCase()
-        .replaceAll(' ', '_')
-        .replaceAll("'", '_')
-        .replaceAll('`', '_');
+    this.handleDBSlug(false);
+  }
+
+  @BeforeUpdate()
+  checkSlugUpdate() {
+    this.handleDBSlug(true);
+  }
+
+  handleDBSlug(isUpdate: boolean) {
+    if (!isUpdate && !this.slug) {
+      this.slug = this.formatSlug(this.title);
+    } else if (this.slug) {
+      this.slug = this.formatSlug(this.slug);
     }
+  }
+
+  formatSlug(textToFormat: string) {
+    return textToFormat
+      .toLocaleLowerCase()
+      .replaceAll(' ', '_')
+      .replaceAll("'", '_')
+      .replaceAll('`', '_');
   }
 }
