@@ -21,6 +21,18 @@ export class ProductsService {
 
   async create(createProductDto: CreateProductDto) {
     try {
+      // To remove this and insert in product model
+      // if (!createProductDto.slug) {
+      //   createProductDto.slug = createProductDto.title
+      //     .toLocaleLowerCase()
+      //     .replaceAll(' ', '_')
+      //     .replaceAll("'", '');
+      // } else {
+      //   createProductDto.slug = createProductDto.slug
+      //     .toLocaleLowerCase()
+      //     .replaceAll(' ', '_')
+      //     .replaceAll("'", '');
+      // }
       const product = this.productRepository.create(createProductDto);
       await this.productRepository.save(product);
       return product;

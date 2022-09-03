@@ -1,5 +1,5 @@
 import { text } from 'stream/consumers';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class Product {
@@ -44,4 +44,21 @@ export class Product {
     type: 'text',
   })
   gender: string;
+
+  @BeforeInsert()
+  checkSlugInsert() {
+    if (!this.slug) {
+      this.slug = this.title
+        .toLocaleLowerCase()
+        .replaceAll(' ', '_')
+        .replaceAll("'", '_')
+        .replaceAll('`', '_');
+    } else {
+      this.slug = this.slug
+        .toLocaleLowerCase()
+        .replaceAll(' ', '_')
+        .replaceAll("'", '_')
+        .replaceAll('`', '_');
+    }
+  }
 }
