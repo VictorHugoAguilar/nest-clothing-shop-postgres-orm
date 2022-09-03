@@ -1,7 +1,7 @@
 {
   "name": "teslo-shop",
   "version": "0.0.1",
-  "description": "",
+  "description": "Nest application with postgress through ORM ",
   "author": "Victor Hugo Aguilar Aguilar",
   "private": true,
   "license": "MIT",
