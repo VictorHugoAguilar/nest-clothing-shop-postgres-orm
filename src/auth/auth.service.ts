@@ -36,7 +36,7 @@ export class AuthService {
 
       return {
         ...user,
-        token: this.generateToken({ email: user.email }),
+        token: this.generateToken({ id: user.id }),
       };
     } catch (error) {
       handleDBExeptions(error);
@@ -48,7 +48,7 @@ export class AuthService {
       const { email, password } = loginUserDto;
       const user = await this.userRepository.findOne({
         where: { email },
-        select: { email: true, password: true },
+        select: { email: true, password: true, id: true },
       });
 
       if (!user) {
@@ -63,7 +63,7 @@ export class AuthService {
 
       return {
         ...user,
-        token: this.generateToken({ email: user.email }),
+        token: this.generateToken({ id: user.id }),
       };
     } catch (error) {
       handleDBExeptions(error);
