@@ -1,10 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  InternalServerErrorException,
-  Logger,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -12,6 +6,7 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { PaginationDto } from '../common/dto/pagination.dto';
 import { validate as isUUID } from 'uuid';
 import { Product, ProductImage } from './entities/';
+import { handleDBExeptions } from './../common/exeption';
 
 @Injectable()
 export class ProductsService {
@@ -37,7 +32,7 @@ export class ProductsService {
       await this.productRepository.save(product);
       return { ...product, images };
     } catch (error) {
-      this.handleDBExeptions(error);
+      handleDBExeptions(error);
     }
   }
 
@@ -135,7 +130,7 @@ export class ProductsService {
       await queryRunner.rollbackTransaction();
       await queryRunner.release();
 
-      this.handleDBExeptions(error);
+      handleDBExeptions(error);
     }
     return this.findOnePlain(id);
   }
@@ -146,22 +141,12 @@ export class ProductsService {
     return `Product with id #${id} deleted correctly`;
   }
 
-  private handleDBExeptions(error: any) {
-    if (error.code === '23505') {
-      throw new BadRequestException(error.detail);
-    }
-    this.logger.error(error);
-    throw new InternalServerErrorException(
-      'Unexpected error, check server logs',
-    );
-  }
-
   async deleteAllProducts() {
     const query = this.productRepository.createQueryBuilder('product');
     try {
       return await query.delete().where({}).execute();
     } catch (error) {
-      this.handleDBExeptions(error);
+      handleDBExeptions(error);
     }
   }
 }
