@@ -7,6 +7,8 @@ import { User } from './entities/user.entity';
 import { CreateUserDto, UpdateUserDto } from './dto/';
 import { handleDBExeptions } from './../common/exeption/exception-database';
 
+import * as bcrypt from 'bcrypt';
+
 @Injectable()
 export class AuthService {
   private readonly logger = new Logger('AuthService');
@@ -18,8 +20,17 @@ export class AuthService {
 
   async create(createUserDto: CreateUserDto) {
     try {
-      const user = await this.userRepository.create(createUserDto);
+      const { password, ...userData } = createUserDto;
+
+      const user = await this.userRepository.create({
+        ...userData,
+        password: bcrypt.hashSync(password, 10),
+      });
+
       await this.userRepository.save(user);
+      delete user.password;
+
+      // TODO: retorn JWT de access
       return user;
     } catch (error) {
       handleDBExeptions(error);
