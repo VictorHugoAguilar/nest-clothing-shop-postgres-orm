@@ -1,13 +1,14 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 
-import { CreateUserDto, UpdateUserDto } from './dto/';
+import { CreateUserDto } from './dto/';
 import { handleDBExeptions } from './../common/exeption/exception-database';
 
 import * as bcrypt from 'bcrypt';
+import { LoginUserDto } from './dto/login-user.dto';
 
 @Injectable()
 export class AuthService {
@@ -37,19 +38,28 @@ export class AuthService {
     }
   }
 
-  findAll() {
-    return `This action returns all auth`;
-  }
+  async login(loginUserDto: LoginUserDto) {
+    try {
+      const { email, password } = loginUserDto;
+      const user = await this.userRepository.findOne({
+        where: { email },
+        select: { email: true, password: true },
+      });
 
-  findOne(id: number) {
-    return `This action returns a #${id} auth`;
-  }
+      if (!user) {
+        throw new UnauthorizedException('Credentials are not valid (email)');
+      }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} auth`;
-  }
+      if (!bcrypt.compareSync(password, user.password)) {
+        throw new UnauthorizedException('Credentials are not valid (pass)');
+      }
 
-  remove(id: number) {
-    return `This action removes a #${id} auth`;
+      delete user.password;
+
+      // TODO: return JWT
+      return user;
+    } catch (error) {
+      handleDBExeptions(error);
+    }
   }
 }
