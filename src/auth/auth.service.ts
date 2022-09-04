@@ -1,5 +1,6 @@
 import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { JwtService } from '@nestjs/jwt';
 
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
@@ -9,6 +10,7 @@ import { handleDBExeptions } from './../common/exeption/exception-database';
 
 import * as bcrypt from 'bcrypt';
 import { LoginUserDto } from './dto/login-user.dto';
+import { JwtPayload } from './interfaces/jwt-payload.interface';
 
 @Injectable()
 export class AuthService {
@@ -17,6 +19,7 @@ export class AuthService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    private readonly jwtService: JwtService,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
@@ -31,8 +34,10 @@ export class AuthService {
       await this.userRepository.save(user);
       delete user.password;
 
-      // TODO: retorn JWT de access
-      return user;
+      return {
+        ...user,
+        token: this.generateToken({ email: user.email }),
+      };
     } catch (error) {
       handleDBExeptions(error);
     }
@@ -56,10 +61,17 @@ export class AuthService {
 
       delete user.password;
 
-      // TODO: return JWT
-      return user;
+      return {
+        ...user,
+        token: this.generateToken({ email: user.email }),
+      };
     } catch (error) {
       handleDBExeptions(error);
     }
+  }
+
+  private generateToken(payload: JwtPayload) {
+    const token = this.jwtService.sign(payload);
+    return token;
   }
 }
