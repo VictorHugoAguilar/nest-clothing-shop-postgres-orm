@@ -1,8 +1,12 @@
 import { NestFactory } from '@nestjs/core';
-import { ValidationPipe } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+
 import { AppModule } from './app.module';
 
 async function bootstrap() {
+  const logger = new Logger('bootstrap');
+
   const app = await NestFactory.create(AppModule);
 
   // Config prefix global route basic
@@ -20,6 +24,25 @@ async function bootstrap() {
     }),
   );
 
-  await app.listen(3000);
+  const config = new DocumentBuilder()
+    .setTitle('Teslo RESTFul API')
+    .setDescription('Teslo shop endpoints')
+    .setVersion('1.0')
+    .addTag('tesla-shop')
+    .setContact(
+      'Victor Hugo Aguilar',
+      'victorhugoaguilar.com',
+      'contacto@victorhugoaguilar.com',
+    )
+    .setLicense('MIT', 'https://opensource.org/licenses/MIT')
+    .setVersion('V1.0.0')
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api', app, document);
+
+  app.enableCors();
+
+  await app.listen(process.env.PORT_API);
+  logger.log(`App running in port ${process.env.PORT_API}`);
 }
 bootstrap();
