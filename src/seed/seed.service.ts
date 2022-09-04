@@ -15,7 +15,7 @@ export class SeedService {
     private readonly userRepository: Repository<User>,
   ) {}
 
-  async runSeed(user: User) {
+  async runSeed() {
     await this.deleteTables();
     const adminUser = await this.insertUsers();
 
@@ -42,7 +42,6 @@ export class SeedService {
 
   private async deleteTables() {
     await this.productService.deleteAllProducts();
-
     const queryBuilder = this.userRepository.createQueryBuilder();
     await queryBuilder.delete().where({}).execute();
   }
